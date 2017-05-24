@@ -244,6 +244,7 @@
             UIViewController *tmpController = [[UIViewController alloc] init];
             [tmpWindow setRootViewController:tmpController];
             [tmpWindow setWindowLevel:UIWindowLevelNormal];
+            _refBrowserWindow = tmpWindow;
 
             [tmpWindow makeKeyAndVisible];
             [tmpController presentViewController:nav animated:YES completion:nil];
