@@ -481,6 +481,15 @@
     }
 }
 
+- (void)clearBrowserWindow
+{
+    //
+    if(_refBrowserWindow != nil){
+        _refBrowserWindow.hidden = YES;
+        _refBrowserWindow = nil;
+    }
+}
+
 - (void)browserExit
 {
     if (self.callbackId != nil) {
@@ -806,7 +815,11 @@
 {
     [CDVUserAgentUtil releaseLock:&_userAgentLockToken];
     self.currentURL = nil;
-
+    
+    if ((self.navigationDelegate != nil) && [self.navigationDelegate respondsToSelector:@selector(clearBrowserWindow)]) {
+        [self.navigationDelegate clearBrowserWindow];
+    }
+    
     if ((self.navigationDelegate != nil) && [self.navigationDelegate respondsToSelector:@selector(browserExit)]) {
         [self.navigationDelegate browserExit];
     }
