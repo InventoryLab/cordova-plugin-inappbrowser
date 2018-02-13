@@ -239,14 +239,16 @@
     // Run later to avoid the "took a long time" log message.
     dispatch_async(dispatch_get_main_queue(), ^{
         if (weakSelf.inAppBrowserViewController != nil) {
-            CGRect frame = [[UIScreen mainScreen] bounds];
+           /*CGRect frame = [[UIScreen mainScreen] bounds];
             UIWindow *tmpWindow = [[UIWindow alloc] initWithFrame:frame];
             UIViewController *tmpController = [[UIViewController alloc] init];
             [tmpWindow setRootViewController:tmpController];
             [tmpWindow setWindowLevel:UIWindowLevelNormal];
-
+            _refBrowserWindow = tmpWindow;
+            
             [tmpWindow makeKeyAndVisible];
-            [tmpController presentViewController:nav animated:YES completion:nil];
+            [tmpController presentViewController:nav animated:YES completion:nil];*/
+            [weakSelf.viewController presentViewController:nav animated:YES completion:nil];
         }
     });
 }
@@ -478,6 +480,15 @@
         [pluginResult setKeepCallback:[NSNumber numberWithBool:YES]];
 
         [self.commandDelegate sendPluginResult:pluginResult callbackId:self.callbackId];
+    }
+}
+
+- (void)clearBrowserWindow
+{
+    //
+    if(_refBrowserWindow != nil){
+        _refBrowserWindow.hidden = YES;
+        _refBrowserWindow = nil;
     }
 }
 
@@ -806,7 +817,11 @@
 {
     [CDVUserAgentUtil releaseLock:&_userAgentLockToken];
     self.currentURL = nil;
-
+    
+    if ((self.navigationDelegate != nil) && [self.navigationDelegate respondsToSelector:@selector(clearBrowserWindow)]) {
+        [self.navigationDelegate clearBrowserWindow];
+    }
+    
     if ((self.navigationDelegate != nil) && [self.navigationDelegate respondsToSelector:@selector(browserExit)]) {
         [self.navigationDelegate browserExit];
     }
